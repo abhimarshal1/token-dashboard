@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,7 +39,7 @@ export default function RootLayout({
                 key={nav.name}
                 className={`menu ${isSelectedPath(nav.href) ? "selected" : ""}`}
               >
-                <a href={nav.href}>{nav.name}</a>
+                <Link href={nav.href}>{nav.name}</Link>
               </li>
             ))}
           </ul>
