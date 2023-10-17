@@ -2,9 +2,8 @@
 import { TOKEN_CONFIG } from "@/constants/contract";
 import styles from "./page.module.css";
 import useApp from "@/hooks/useApp";
-import { shortenHash } from "@/utils/common";
+import { formatTokenValueInCurrency } from "@/utils/common";
 import { useState } from "react";
-import { formatUnits, zeroAddress } from "viem";
 import { explorerUrl } from "@/config/client";
 
 const itemsPerPage = 10;
@@ -38,10 +37,10 @@ export default function Holders() {
                       href={`${explorerUrl}/address/${item.address}`}
                       target="_blank"
                     >
-                      {shortenHash(item.address!)}
+                      {item.address}
                     </a>
                   </td>
-                  <td>{formatUnits(item.value!, 6)}</td>
+                  <td>{formatTokenValueInCurrency(item.value!)}</td>
                 </tr>
               );
             })}

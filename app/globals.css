@@ -43,7 +43,7 @@ a {
   border-radius: 0.5rem;
 }
 
-.menu.selected {
+.menu.active {
   background: #3876bf;
 }
 

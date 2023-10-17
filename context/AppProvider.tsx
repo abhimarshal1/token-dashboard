@@ -1,3 +1,4 @@
+"use client";
 import { PropsWithChildren, createContext, useEffect } from "react";
 import Link from "next/link";
 import useTransferLogs from "@/hooks/useTransferLogs";
@@ -15,37 +16,24 @@ const AppProvider = ({ children }: PropsWithChildren<{}>) => {
 
   const isSelectedPath = (route: string) => pathname === route;
 
-  const { loading, data, blockTimestampData } = useTransferLogs();
+  const { loading, data } = useTransferLogs();
   const [cachedData, setCachedData] = useLocalStorage(dataKey, {
     ...data,
-    blockTimestampData,
   });
 
-  const isBlockTimestampDataEmpty = !Object.keys(blockTimestampData).length;
-
   useEffect(() => {
-    if (data.logs.length && !isBlockTimestampDataEmpty) {
-      setCachedData({ ...data, blockTimestampData });
+    if (data.logs.length) {
+      setCachedData({ ...data });
     }
-  }, [blockTimestampData, data, isBlockTimestampDataEmpty, setCachedData]);
+  }, [data, setCachedData]);
 
   const computedData = data.logs.length ? data : cachedData;
-  const computedBlockTimestampData = isBlockTimestampDataEmpty
-    ? cachedData.blockTimestampData
-    : blockTimestampData;
 
-  if (
-    (loading && !computedData.logs.length) ||
-    !Object.keys(computedBlockTimestampData).length
-  ) {
-    const message =
-      loading && !computedData.logs.length
-        ? "Querying the network"
-        : "Almost done! Please hold on";
+  if (loading && !computedData.logs.length) {
     return (
       <div className="spinnerContainer">
         <div className="spinner" />
-        <p>{message}</p>
+        <p>Querying the network</p>
       </div>
     );
   }
@@ -54,7 +42,6 @@ const AppProvider = ({ children }: PropsWithChildren<{}>) => {
     <AppContext.Provider
       value={{
         ...computedData,
-        blockTimestampData: computedBlockTimestampData,
       }}
     >
       <div className="sidebar">
@@ -62,10 +49,12 @@ const AppProvider = ({ children }: PropsWithChildren<{}>) => {
         <ul className="menus">
           {navItems.map((nav) => (
             <li
-              key={nav.name}
-              className={`menu ${isSelectedPath(nav.href) ? "selected" : ""}`}
+              key={nav.key}
+              className={`${nav.key}-nav menu ${
+                isSelectedPath(nav.href) ? "active" : ""
+              }`}
             >
-              <Link href={nav.href}>{nav.name}</Link>
+              <Link href={nav.href}>{nav.label}</Link>
             </li>
           ))}
         </ul>

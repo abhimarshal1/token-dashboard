@@ -10,7 +10,13 @@ type Args = {
   args: ArgsContentType;
 };
 
+type BlockTimestamp = {
+  timestamp: string;
+};
+
 export type Logs = Log & Args;
+
+export type ComputedLogs = Log & Args & BlockTimestamp;
 
 export type TokenConfigType = {
   name: string;
@@ -29,11 +35,7 @@ export type BlockTimestampMapping = {
 };
 
 export type AppContextType = {
-  logs: Array<Logs>;
+  logs: Array<ComputedLogs>;
   holders: Array<EntryType>;
   minters: Array<EntryType>;
-};
-
-export type AppContextWithBlockTimestamp = AppContextType & {
-  blockTimestampData: BlockTimestampMapping;
 };

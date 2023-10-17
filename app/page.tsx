@@ -2,15 +2,15 @@
 import { TOKEN_CONFIG } from "@/constants/contract";
 import styles from "./page.module.css";
 import useApp from "@/hooks/useApp";
-import { shortenHash } from "@/utils/common";
+import { formatTokenValueInCurrency, shortenHash } from "@/utils/common";
 import { useState } from "react";
-import { formatUnits, zeroAddress } from "viem";
+import { zeroAddress } from "viem";
 import { explorerUrl } from "@/config/client";
 
 const itemsPerPage = 10;
 
 export default function Home() {
-  const { logs, blockTimestampData } = useApp();
+  const { logs } = useApp();
   const [filterValue, setFilterValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortDirection, setSortDirection] = useState("desc");
@@ -32,18 +32,8 @@ export default function Home() {
 
   const sortedFilteredLogs =
     sortDirection === "asc"
-      ? filteredLogs.sort((a, b) =>
-          Number(
-            blockTimestampData[a.blockNumber!.toString()].timestamp -
-              blockTimestampData[b.blockNumber!.toString()].timestamp
-          )
-        )
-      : filteredLogs.sort((a, b) =>
-          Number(
-            blockTimestampData[b.blockNumber!.toString()].timestamp -
-              blockTimestampData[a.blockNumber!.toString()].timestamp
-          )
-        );
+      ? filteredLogs.sort((a, b) => Number(+a.timestamp - +b.timestamp))
+      : filteredLogs.sort((a, b) => Number(+b.timestamp - +a.timestamp));
 
   const getSortIcon = () => {
     return sortDirection === "asc" ? "🔼" : "🔽";
@@ -122,7 +112,7 @@ export default function Home() {
                       {shortenHash(item.to!)}
                     </a>
                   </td>
-                  <td>{formatUnits(item.value!, 6)}</td>
+                  <td>{formatTokenValueInCurrency(item.value!)}</td>
                   <td>
                     <a
                       href={`${explorerUrl}/block/${item.blockNumber}`}
@@ -131,16 +121,7 @@ export default function Home() {
                       {item.blockNumber!.toString()}
                     </a>
                   </td>
-                  <td>
-                    {new Date(
-                      Number(
-                        BigInt(
-                          blockTimestampData[item.blockNumber!.toString()]
-                            .timestamp
-                        ) * 1000n
-                      )
-                    ).toLocaleString()}
-                  </td>
+                  <td>{new Date(+item.timestamp).toLocaleString()}</td>
                 </tr>
               );
             })}

@@ -1,8 +1,7 @@
-import { AppContextWithBlockTimestamp } from "@/types/common";
+import { AppContextType } from "@/types/common";
 
-export const INITIAL_DATA: AppContextWithBlockTimestamp = {
+export const INITIAL_DATA: AppContextType= {
   logs: [],
   holders: [],
   minters: [],
-  blockTimestampData: {},
 };
