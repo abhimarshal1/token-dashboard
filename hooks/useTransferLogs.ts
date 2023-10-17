@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { INITIAL_DATA } from "@/constants/context";
-import { AppContextType, BlockTimestampMapping } from "@/types/common";
+import { AppContextType } from "@/types/common";
 
 const useTransferLogs = () => {
   const [isLoading, setLoading] = useState(true);
@@ -15,7 +15,6 @@ const useTransferLogs = () => {
           const data = await fetch("/api/tokenHistory");
           const json = await data.json();
 
-          console.log("json", json);
           setData(json);
         } catch (e) {
           console.error(e);

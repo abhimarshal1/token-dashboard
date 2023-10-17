@@ -2,7 +2,7 @@ import { publicClient } from "@/config/client";
 import { TOKEN_CONFIG } from "@/constants/contract";
 import { getLogsWithBlockTimestamp } from "@/utils/block";
 import { getTokenHoldersAndMinters } from "@/utils/token";
-import { BlockNumber, parseAbiItem } from "viem";
+import { parseAbiItem } from "viem";
 
 export async function GET() {
   const blockNumber = await publicClient.getBlockNumber();

@@ -1,4 +1,4 @@
-import { Hash, Log, zeroAddress } from "viem";
+import { Hash, zeroAddress } from "viem";
 import { erc20Contract } from "@/config/contract";
 import { publicClient } from "@/config/client";
 import { EntryType, Logs } from "@/types/common";
