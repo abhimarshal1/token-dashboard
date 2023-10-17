@@ -5,7 +5,7 @@ import useApp from "@/hooks/useApp";
 import { shortenHash } from "@/utils/common";
 import { useState } from "react";
 import { formatUnits, zeroAddress } from "viem";
-import { explorerUrl } from "@/utils/client";
+import { explorerUrl } from "@/config/client";
 
 const itemsPerPage = 10;
 
@@ -13,21 +13,48 @@ export default function Home() {
   const { logs, blockTimestampData } = useApp();
   const [filterValue, setFilterValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortDirection, setSortDirection] = useState("desc");
 
   const flattenedArgsLogs = logs.map((log) => ({ ...log, ...log.args }));
 
   const filteredLogs = filterValue
     ? flattenedArgsLogs.filter((item) => {
-        const values = [item.from?.toLowerCase(), item.to?.toLowerCase()];
+        const values = [
+          item.transactionHash?.toLowerCase(),
+          item.from?.toLowerCase(),
+          item.to?.toLowerCase(),
+        ];
         const fValue = filterValue.toLowerCase();
 
         return values.includes(fValue);
       })
     : flattenedArgsLogs;
 
+  const sortedFilteredLogs =
+    sortDirection === "asc"
+      ? filteredLogs.sort((a, b) =>
+          Number(
+            blockTimestampData[a.blockNumber!.toString()].timestamp -
+              blockTimestampData[b.blockNumber!.toString()].timestamp
+          )
+        )
+      : filteredLogs.sort((a, b) =>
+          Number(
+            blockTimestampData[b.blockNumber!.toString()].timestamp -
+              blockTimestampData[a.blockNumber!.toString()].timestamp
+          )
+        );
+
+  const getSortIcon = () => {
+    return sortDirection === "asc" ? "🔼" : "🔽";
+  };
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredLogs.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = sortedFilteredLogs.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
   return (
     <main className={styles.main}>
@@ -41,7 +68,7 @@ export default function Home() {
             value={filterValue}
           />
         </div>
-        <table className={styles.table}>
+        <table className={styles.table} data-cy="transaction-table">
           <thead>
             <tr>
               <th>Txn Hash</th>
@@ -50,7 +77,14 @@ export default function Home() {
               <th>To</th>
               <th>Value ({TOKEN_CONFIG.symbol})</th>
               <th>Block Number</th>
-              <th>Timestamp</th>
+              <th
+                className={styles.sortColumn}
+                onClick={() =>
+                  setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"))
+                }
+              >
+                Timestamp {getSortIcon()}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -100,8 +134,10 @@ export default function Home() {
                   <td>
                     {new Date(
                       Number(
-                        blockTimestampData[item.blockNumber!.toString()]
-                          .timestamp * 1000n
+                        BigInt(
+                          blockTimestampData[item.blockNumber!.toString()]
+                            .timestamp
+                        ) * 1000n
                       )
                     ).toLocaleString()}
                   </td>
@@ -122,14 +158,14 @@ export default function Home() {
             <button
               className={styles.button}
               onClick={() => setCurrentPage((prev) => prev + 1)}
-              disabled={indexOfLastItem >= filteredLogs.length}
+              disabled={indexOfLastItem >= sortedFilteredLogs.length}
             >
               Next
             </button>
           </div>
           <p>
             Showing {indexOfFirstItem + 1} - {indexOfLastItem} of{" "}
-            {filteredLogs.length} records
+            {sortedFilteredLogs.length} records
           </p>
         </div>
       </div>

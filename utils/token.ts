@@ -1,6 +1,6 @@
 import { Hash, Log, zeroAddress } from "viem";
-import { erc20Contract } from "@/utils/contract";
-import { publicClient } from "@/utils/client";
+import { erc20Contract } from "@/config/contract";
+import { publicClient } from "@/config/client";
 import { EntryType, Logs } from "@/types/common";
 
 const sortFunction = (a: EntryType, b: EntryType) => Number(b.value - a.value);

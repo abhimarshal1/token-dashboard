@@ -5,7 +5,7 @@ import useApp from "@/hooks/useApp";
 import { shortenHash } from "@/utils/common";
 import { useState } from "react";
 import { formatUnits, zeroAddress } from "viem";
-import { explorerUrl } from "@/utils/client";
+import { explorerUrl } from "@/config/client";
 
 const itemsPerPage = 10;
 
@@ -20,7 +20,7 @@ export default function Holders() {
   return (
     <main className={styles.main}>
       <div className={styles.tableContainer}>
-        <table className={styles.table}>
+        <table className={styles.table} data-cy="holders-table">
           <thead>
             <tr>
               <th>Rank</th>

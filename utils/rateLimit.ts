@@ -1,5 +1,5 @@
 import { Block, BlockNumber } from "viem";
-import { publicClient } from "./client";
+import { publicClient } from "../config/client";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

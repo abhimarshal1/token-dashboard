@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { BlockNumber } from "viem";
 import { INITIAL_DATA } from "@/constants/context";
 import { AppContextType, BlockTimestampMapping } from "@/types/common";
-import { publicClient } from "@/utils/client";
+import { publicClient } from "@/config/client";
 import { parseAbiItem } from "viem/abi";
 import { getTokenHoldersAndMinters } from "@/utils/token";
 import { TOKEN_CONFIG } from "@/constants/contract";
