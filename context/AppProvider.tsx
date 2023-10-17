@@ -1,15 +1,12 @@
 "use client";
-import { PropsWithChildren, createContext, useEffect } from "react";
+import { PropsWithChildren, createContext } from "react";
 import Link from "next/link";
 import useTransferLogs from "@/hooks/useTransferLogs";
 import { INITIAL_DATA } from "@/constants/context";
-import { useLocalStorage } from "./useLocalStorage";
 import { usePathname } from "next/navigation";
 import { navItems } from "@/constants/sidebar";
 
 export const AppContext = createContext(INITIAL_DATA);
-
-const dataKey = "token-dashboard-cached-data-logs";
 
 const AppProvider = ({ children }: PropsWithChildren<{}>) => {
   const pathname = usePathname();
@@ -17,19 +14,8 @@ const AppProvider = ({ children }: PropsWithChildren<{}>) => {
   const isSelectedPath = (route: string) => pathname === route;
 
   const { loading, data } = useTransferLogs();
-  const [cachedData, setCachedData] = useLocalStorage(dataKey, {
-    ...data,
-  });
 
-  useEffect(() => {
-    if (data.logs.length) {
-      setCachedData({ ...data });
-    }
-  }, [data, setCachedData]);
-
-  const computedData = data.logs.length ? data : cachedData;
-
-  if (loading && !computedData.logs.length) {
+  if (loading) {
     return (
       <div className="spinnerContainer">
         <div className="spinner" />
@@ -41,7 +27,7 @@ const AppProvider = ({ children }: PropsWithChildren<{}>) => {
   return (
     <AppContext.Provider
       value={{
-        ...computedData,
+        ...data,
       }}
     >
       <div className="sidebar">
