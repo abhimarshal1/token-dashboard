@@ -1,5 +1,5 @@
 "use client";
-import { PropsWithChildren, createContext } from "react";
+import { PropsWithChildren, createContext, useCallback } from "react";
 import Link from "next/link";
 import useTransferLogs from "@/hooks/useTransferLogs";
 import { INITIAL_DATA } from "@/constants/context";
@@ -11,7 +11,10 @@ export const AppContext = createContext(INITIAL_DATA);
 const AppProvider = ({ children }: PropsWithChildren<{}>) => {
   const pathname = usePathname();
 
-  const isSelectedPath = (route: string) => pathname === route;
+  const isSelectedPath = useCallback(
+    (route: string) => pathname === route,
+    [pathname]
+  );
 
   const { loading, data } = useTransferLogs();
 

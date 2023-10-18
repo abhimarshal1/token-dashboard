@@ -3,7 +3,7 @@ import { TOKEN_CONFIG } from "@/constants/contract";
 import styles from "./page.module.css";
 import useApp from "@/hooks/useApp";
 import { formatTokenValueInCurrency } from "@/utils/common";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { explorerUrl } from "@/config/client";
 
 const itemsPerPage = 10;
@@ -12,9 +12,18 @@ export default function Minters() {
   const { minters } = useApp();
   const [currentPage, setCurrentPage] = useState(1);
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = minters.slice(indexOfFirstItem, indexOfLastItem);
+  const indexOfLastItem = useMemo(
+    () => currentPage * itemsPerPage,
+    [currentPage]
+  );
+  const indexOfFirstItem = useMemo(
+    () => indexOfLastItem - itemsPerPage,
+    [indexOfLastItem]
+  );
+  const currentItems = useMemo(
+    () => minters.slice(indexOfFirstItem, indexOfLastItem),
+    [minters, indexOfFirstItem, indexOfLastItem]
+  );
 
   return (
     <main className={styles.main}>

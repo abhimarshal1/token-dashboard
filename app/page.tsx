@@ -3,7 +3,7 @@ import { TOKEN_CONFIG } from "@/constants/contract";
 import styles from "./page.module.css";
 import useApp from "@/hooks/useApp";
 import { formatTokenValueInCurrency, shortenHash } from "@/utils/common";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { zeroAddress } from "viem";
 import { explorerUrl } from "@/config/client";
 
@@ -15,35 +15,56 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortDirection, setSortDirection] = useState("desc");
 
-  const flattenedArgsLogs = logs.map((log) => ({ ...log, ...log.args }));
+  const flattenedArgsLogs = useMemo(
+    () => logs.map((log) => ({ ...log, ...log.args })),
+    [logs]
+  );
 
-  const filteredLogs = filterValue
-    ? flattenedArgsLogs.filter((item) => {
-        const values = [
-          item.transactionHash?.toLowerCase(),
-          item.from?.toLowerCase(),
-          item.to?.toLowerCase(),
-        ];
-        const fValue = filterValue.toLowerCase();
+  const filteredLogs = useMemo(
+    () =>
+      filterValue
+        ? flattenedArgsLogs.filter((item) => {
+            const values = [
+              item.transactionHash?.toLowerCase(),
+              item.from?.toLowerCase(),
+              item.to?.toLowerCase(),
+            ];
+            const fValue = filterValue.toLowerCase();
 
-        return values.includes(fValue);
-      })
-    : flattenedArgsLogs;
+            return values.includes(fValue);
+          })
+        : flattenedArgsLogs,
+    [filterValue, flattenedArgsLogs]
+  );
 
-  const sortedFilteredLogs =
-    sortDirection === "asc"
-      ? filteredLogs.sort((a, b) => Number(+a.timestamp - +b.timestamp))
-      : filteredLogs.sort((a, b) => Number(+b.timestamp - +a.timestamp));
+  const sortedFilteredLogs = useMemo(
+    () =>
+      filteredLogs.sort((a, b) => {
+        const isAscending = sortDirection === "asc";
+        const value1 = +(isAscending ? a : b).timestamp;
+        const value2 = +(isAscending ? b : a).timestamp;
 
-  const getSortIcon = () => {
-    return sortDirection === "asc" ? "🔼" : "🔽";
-  };
+        return Number(value1 - value2);
+      }),
+    [filteredLogs, sortDirection]
+  );
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = sortedFilteredLogs.slice(
-    indexOfFirstItem,
-    indexOfLastItem
+  const sortIcon = useMemo(
+    () => (sortDirection === "asc" ? "🔼" : "🔽"),
+    [sortDirection]
+  );
+
+  const indexOfLastItem = useMemo(
+    () => currentPage * itemsPerPage,
+    [currentPage]
+  );
+  const indexOfFirstItem = useMemo(
+    () => indexOfLastItem - itemsPerPage,
+    [indexOfLastItem]
+  );
+  const currentItems = useMemo(
+    () => sortedFilteredLogs.slice(indexOfFirstItem, indexOfLastItem),
+    [sortedFilteredLogs, indexOfFirstItem, indexOfLastItem]
   );
 
   return (
@@ -73,7 +94,7 @@ export default function Home() {
                   setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"))
                 }
               >
-                Timestamp {getSortIcon()}
+                Timestamp {sortIcon}
               </th>
             </tr>
           </thead>
