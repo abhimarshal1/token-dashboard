@@ -39,6 +39,8 @@ export const getLogsWithBlockTimestamp = async (logs: Logs[]) => {
 
   return logs.map((log) => ({
     ...log,
-    timestamp: blockTimestampMap[log.blockNumber!.toString()].timestamp * 1000n,
+    timestamp: (
+      blockTimestampMap[log.blockNumber!.toString()].timestamp * 1000n
+    ).toString(),
   }));
 };
