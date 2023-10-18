@@ -5,26 +5,31 @@ import { getTokenHoldersAndMinters } from "@/utils/token";
 import { parseAbiItem } from "viem";
 
 export async function GET() {
-  const blockNumber = await publicClient.getBlockNumber();
-  const logs = await publicClient.getLogs({
-    address: TOKEN_CONFIG.address,
-    event: parseAbiItem(
-      "event Transfer(address indexed from, address indexed to, uint256 value)"
-    ),
-    fromBlock: blockNumber - 250000n,
-    toBlock: blockNumber,
-    strict: true,
-  });
+  try {
+    const blockNumber = await publicClient.getBlockNumber();
+    const logs = await publicClient.getLogs({
+      address: TOKEN_CONFIG.address,
+      event: parseAbiItem(
+        "event Transfer(address indexed from, address indexed to, uint256 value)"
+      ),
+      fromBlock: blockNumber - 300000n,
+      strict: true,
+    });
 
-  const [{ holders, minters }, logsWithBlockTimestamp] = await Promise.all([
-    getTokenHoldersAndMinters(logs),
-    getLogsWithBlockTimestamp(logs),
-  ]);
+    const [{ holders, minters }, logsWithBlockTimestamp] = await Promise.all([
+      getTokenHoldersAndMinters(logs),
+      getLogsWithBlockTimestamp(logs),
+    ]);
 
-  const response = JSON.stringify(
-    { logs: logsWithBlockTimestamp, holders, minters },
-    (_, value) => (typeof value === "bigint" ? value.toString() : value)
-  );
+    const response = JSON.stringify(
+      { logs: logsWithBlockTimestamp, holders, minters },
+      (_, value) => (typeof value === "bigint" ? value.toString() : value)
+    );
 
-  return new Response(response);
+    return new Response(response);
+  } catch (error) {
+    return new Response(JSON.stringify(error), {
+      status: 500,
+    });
+  }
 }
