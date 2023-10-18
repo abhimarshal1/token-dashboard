@@ -11,7 +11,7 @@ export async function GET() {
     event: parseAbiItem(
       "event Transfer(address indexed from, address indexed to, uint256 value)"
     ),
-    fromBlock: blockNumber - 269000n,
+    fromBlock: blockNumber - 250000n,
     toBlock: blockNumber,
     strict: true,
   });
