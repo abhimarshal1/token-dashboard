@@ -15,7 +15,9 @@ const useTransferLogs = () => {
           const data = await fetch("/api/tokenHistory");
           const json = await data.json();
 
-          setData(json);
+          if (data.ok) {
+            setData(json);
+          }
         } catch (e) {
           console.error(e);
         } finally {
